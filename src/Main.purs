@@ -94,6 +94,6 @@ main = void $ unsafePartial do
 	ctx <- getContext2D canvas
 	animFrame <- animationFrame
 	ctx <- setFillStyle "#0000FF" ctx
-	--ctx <- fillRect {x: 0.0, y: 0.0, w: 500.0, h: 500.0} ctx
+	--ctx <- fillRect{x: 0.0, y: 0.0, w: 500.0, h: 500.0} ctx
 	drawCube ctx
 	log("working")
