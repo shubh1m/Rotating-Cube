@@ -74,7 +74,7 @@ project3Dto2D (Point3D p) (Angle3D ang) =
 
 drawCube :: forall e. Context2D -> Eff (canvas :: CANVAS | e) Unit
 drawCube ctx =
-	--setFillStyle "#000000" ctx
+	ctx <- setFillStyle "#000000" ctx
 	fillPath ctx do
 		ctx <- moveTo ctx 100.0 100.0
 		ctx <- lineTo ctx 200.0 200.0
@@ -99,5 +99,5 @@ main = void $ unsafePartial do
 	ctx <- getContext2D canvas
 	animFrame <- animationFrame
 	ctx <- setFillStyle "#0000FF" ctx
-	--ctx <- fillRect {x: 0.0, y: 0.0, w: 500.0, h: 500.0} ctx
+	ctx <- fillRect {x: 0.0, y: 0.0, w: 500.0, h: 500.0} ctx
 	drawCube ctx
