@@ -10069,10 +10069,11 @@ var main = Data_Functor["void"](Control_Monad_Eff.functorEff)(function __do() {
                 var v1 = Graphics_Canvas.getContext2D(v.value0)();
                 var v2 = Signal_DOM.animationFrame();
                 var v3 = Graphics_Canvas.setFillStyle("#0000FF")(v1)();
-                return drawCube(v3)();
+                drawCube(v3)();
+                return Control_Monad_Eff_Console.log("helloworls")();
             };
         };
-        throw new Error("Failed pattern match at Main line 98, column 9 - line 99, column 9: " + [ v.constructor.name ]);
+        throw new Error("Failed pattern match at Main line 92, column 9 - line 93, column 9: " + [ v.constructor.name ]);
     })())();
 });
 var angle = new Angle3D({
