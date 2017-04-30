@@ -10059,8 +10059,8 @@ var drawCube = function (ctx) {
 var main = Data_Functor["void"](Control_Monad_Eff.functorEff)(function __do() {
     var v = Graphics_Canvas.getCanvasElementById("thecanvas")();
     var __unused = function (dictPartial1) {
-        return function ($dollar10) {
-            return $dollar10;
+        return function ($dollar11) {
+            return $dollar11;
         };
     };
     return __unused()((function () {
@@ -10068,11 +10068,11 @@ var main = Data_Functor["void"](Control_Monad_Eff.functorEff)(function __do() {
             return function __do() {
                 var v1 = Graphics_Canvas.getContext2D(v.value0)();
                 var v2 = Signal_DOM.animationFrame();
-                drawCube(v1)();
-                return Graphics_Canvas.setFillStyle("#0000FF")(v1)();
+                var v3 = Graphics_Canvas.setFillStyle("#0000FF")(v1)();
+                return drawCube(v3)();
             };
         };
-        throw new Error("Failed pattern match at Main line 97, column 9 - line 98, column 9: " + [ v.constructor.name ]);
+        throw new Error("Failed pattern match at Main line 98, column 9 - line 99, column 9: " + [ v.constructor.name ]);
     })())();
 });
 var angle = new Angle3D({
