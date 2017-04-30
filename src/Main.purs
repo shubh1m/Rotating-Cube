@@ -27,27 +27,27 @@ data Point3D = Point3D
 vertices :: Array Point3D
 vertices =
 	[ Point3D {x:(-100.0), y:100.0, z:(-100.0)}
-		,Point3D {x:100.0, y:100.0, z:(-100.0)}
-		,Point3D {x:100.0, y:(-100.0), z:(-100.0)}
-		,Point3D {x:(-100.0), y:(-100.0), z:(-100.0)}
-		,Point3D {x:(-100.0), y:100.0, z:100.0}
-		,Point3D {x:100.0, y:100.0, z:100.0}
-		,Point3D {x:100.0, y:(-100.0), z:100.0}
-		,Point3D {x:(-100.0), y:(-100.0), z:100.0}
+	,Point3D {x:100.0, y:100.0, z:(-100.0)}
+	,Point3D {x:100.0, y:(-100.0), z:(-100.0)}
+	,Point3D {x:(-100.0), y:(-100.0), z:(-100.0)}
+	,Point3D {x:(-100.0), y:100.0, z:100.0}
+	,Point3D {x:100.0, y:100.0, z:100.0}
+	,Point3D {x:100.0, y:(-100.0), z:100.0}
+	,Point3D {x:(-100.0), y:(-100.0), z:100.0}
 	]
 
 data Angle3D = Angle3D
 	{	qx :: Number
-	, qy :: Number
-	, qz :: Number
+	,	qy :: Number
+	,	qz :: Number
 	}
 
 angle :: Angle3D
-angle = Angle3D{
-		qx: Math.pi/4.0
+angle = Angle3D
+	{	qx: Math.pi/4.0
 	,	qy: Math.pi/3.0
 	,	qz: Math.pi/4.0
-}
+	}
 
 faces :: Array (Array Int)
 faces = [
@@ -59,8 +59,8 @@ faces = [
 	[3,2,6,7]
 ]
 
-project3Dto2D :: Point3D -> Angle3D -> Point3D 
-project3Dto2D (Point3D p) (Angle3D ang) = 
+project3Dto2D :: Point3D -> Angle3D -> Point3D
+project3Dto2D (Point3D p) (Angle3D ang) =
 	let	xRotQz = p.x * Math.cos ang.qz + p.y * Math.sin ang.qz
 		yRotQz = p.y * Math.cos ang.qz + p.x * Math.sin ang.qz
 		zRotQz = p.z
@@ -89,7 +89,7 @@ transform (Point3D p) =
 		Point3D {x:nx, y:ny, z:p.z}
 
 {-forall eff.Eff( canvas :: CANVAS
-						, dom :: DOM 
+						, dom :: DOM
 						, timer :: TIMER
 						| eff
 						) Unit
