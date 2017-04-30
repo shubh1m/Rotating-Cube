@@ -72,13 +72,13 @@ project3Dto2D (Point3D p) (Angle3D ang) =
 	in
 		Point3D {x:xRotQzQxQy, y:yRotQzQxQy, z:p.z}
 
-drawCube :: Context2D -> Eff (canvas :: CANVAS) Context2D
+drawCube :: forall e. Context2D -> Eff (canvas :: CANVAS | e) Unit
 drawCube ctx =
-	fillPath ctx $ do
-		moveTo ctx 100.0 100.0
-		lineTo ctx 200.0 200.0
-		lineTo ctx 150.0 150.0
-		closePath ctx
+	fillPath ctx do
+		ctx <- moveTo ctx 100.0 100.0
+		ctx <- lineTo ctx 200.0 200.0
+		ctx <- lineTo ctx 150.0 150.0
+		void $ closePath ctx
 
 transform :: Point3D -> Point3D
 transform (Point3D p) =
@@ -97,6 +97,6 @@ main = void $ unsafePartial do
 	Just canvas <- getCanvasElementById "thecanvas"
 	ctx <- getContext2D canvas
 	animFrame <- animationFrame
-	--drawCube ctx
+	drawCube ctx
 	setFillStyle "#0000FF" ctx
 	--C.fillRect {x: 0.0, y: 0.0, w: 500.0, h: 500.0} ctx
