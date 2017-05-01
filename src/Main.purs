@@ -73,13 +73,13 @@ project3Dto2D (Point3D p) (Angle3D ang) =
 		Point3D {x:xRotQzQxQy, y:yRotQzQxQy, z:p.z}
 
 drawCube :: forall e. Context2D -> Eff (canvas :: CANVAS | e) Unit
-drawCube ctx = do
-	ctx <- setFillStyle "#000000" ctx
-	fillPath ctx do
-		ctx <- moveTo ctx 100.0 100.0
-		ctx <- lineTo ctx 200.0 200.0
-		ctx <- lineTo ctx 150.0 150.0
-		void $ closePath ctx
+drawCube ctx = strokePath ctx do
+	ctx <- setStrokeStyle "#000000" ctx
+	ctx <- moveTo ctx 100.0 100.0
+	ctx <- lineTo ctx 150.0 200.0
+	ctx <- lineTo ctx 200.0 200.0
+	ctx <- lineTo ctx 200.0 100.0
+	void $ closePath ctx
 
 transform :: Point3D -> Point3D
 transform (Point3D p) =

@@ -10049,18 +10049,20 @@ var oRate = 0.999;
 var fric = 0.0;
 var faces = [ [ 0, 1, 2, 3 ], [ 1, 5, 6, 2 ], [ 5, 4, 7, 6 ], [ 4, 0, 3, 7 ], [ 0, 4, 5, 1 ], [ 3, 2, 6, 7 ] ];
 var drawCube = function (ctx) {
-    return Graphics_Canvas.fillPath(ctx)(function __do() {
-        var v = Graphics_Canvas.moveTo(ctx)(100.0)(100.0)();
-        var v1 = Graphics_Canvas.lineTo(v)(200.0)(200.0)();
-        var v2 = Graphics_Canvas.lineTo(v1)(150.0)(150.0)();
-        return Data_Functor["void"](Control_Monad_Eff.functorEff)(Graphics_Canvas.closePath(v2))();
+    return Graphics_Canvas.strokePath(ctx)(function __do() {
+        var v = Graphics_Canvas.setStrokeStyle("#000000")(ctx)();
+        var v1 = Graphics_Canvas.moveTo(v)(100.0)(100.0)();
+        var v2 = Graphics_Canvas.lineTo(v1)(150.0)(200.0)();
+        var v3 = Graphics_Canvas.lineTo(v2)(200.0)(200.0)();
+        var v4 = Graphics_Canvas.lineTo(v3)(200.0)(100.0)();
+        return Data_Functor["void"](Control_Monad_Eff.functorEff)(Graphics_Canvas.closePath(v4))();
     });
 };
 var main = Data_Functor["void"](Control_Monad_Eff.functorEff)(function __do() {
     var v = Graphics_Canvas.getCanvasElementById("thecanvas")();
     var __unused = function (dictPartial1) {
-        return function ($dollar11) {
-            return $dollar11;
+        return function ($dollar13) {
+            return $dollar13;
         };
     };
     return __unused()((function () {
@@ -10070,10 +10072,10 @@ var main = Data_Functor["void"](Control_Monad_Eff.functorEff)(function __do() {
                 var v2 = Signal_DOM.animationFrame();
                 var v3 = Graphics_Canvas.setFillStyle("#0000FF")(v1)();
                 drawCube(v3)();
-                return Control_Monad_Eff_Console.log("helloworls")();
+                return Control_Monad_Eff_Console.log("working")();
             };
         };
-        throw new Error("Failed pattern match at Main line 92, column 9 - line 93, column 9: " + [ v.constructor.name ]);
+        throw new Error("Failed pattern match at Main line 93, column 9 - line 94, column 9: " + [ v.constructor.name ]);
     })())();
 });
 var angle = new Angle3D({
