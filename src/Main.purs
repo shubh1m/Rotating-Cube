@@ -21,8 +21,8 @@ fric :: Number
 fric = 0.0
 
 vertices :: Array Point3D
-vertices =
-    [Point3D (-100.0) 100.0 (-100.0)
+vertices = [
+    Point3D (-100.0) 100.0 (-100.0)
     ,Point3D 100.0 100.0 (-100.0)
     ,Point3D 100.0 (-100.0) (-100.0)
     ,Point3D (-100.0) (-100.0) (-100.0)
@@ -30,7 +30,7 @@ vertices =
     ,Point3D 100.0 100.0 100.0
     ,Point3D 100.0 (-100.0) 100.0
     ,Point3D (-100.0) (-100.0) 100.0
-  ]
+]
 
 data Point3D = Point3D Number Number Number
 
@@ -109,14 +109,14 @@ drawFace ctx (Face v1 v2 v3 v4) = strokePath ctx do
 
 drawCube :: forall e. Context2D -> (Array Point3D) -> Eff (canvas :: CANVAS | e) Unit
 drawCube ctx vert3D = strokePath ctx do
-    --for faces $ \face -> do
-    --  drawFace (map vert2D face)
-    void $ forE 0 6 $ \i -> do
-        let face = faces !! i
-        let vertFace = []
-        void $ forE 0 4 $ \j -> do
-            cons (vert2D (face !! j)) vertFace
-        drawFace vertFace
+    for_ faces $ \face -> do
+        drawFace ctx Face(v1 v2 v3 v4)
+        where
+            v1 = vert2D(face !! 0)
+            v2 = vert2D(face !! 1)
+            v3 = vert2D(face !! 2)
+            v4 = vert2D(face !! 3)
+            Face v1 v2 v3 v4 = v1 v2 v3 v4
     where
         vert2D = projectAll3Dto2D vert3D angle
 
