@@ -110,15 +110,20 @@ drawFace ctx (Face v1 v2 v3 v4) = strokePath ctx do
 drawCube :: forall e. Context2D -> (Array Point3D) -> Eff (canvas :: CANVAS | e) Unit
 drawCube ctx vert3D = strokePath ctx do
     for_ faces $ \face -> do
+        {-
+        fv <- []
+        for_ face $ \v -> do
+            cons (vert2D !! v) fv
+        -}
         v1 <- vert2D !! (fromMaybe 0 (face !! 0))
         v2 <- vert2D !! (fromMaybe 0 (face !! 1))
         v3 <- vert2D !! (fromMaybe 0 (face !! 2))
         v4 <- vert2D !! (fromMaybe 0 (face !! 3))
-        v1 <- fromMaybe (Point3D 0.0 0.0 0.0) v1
-        v2 <- fromMaybe (Point3D 0.0 0.0 0.0) v2
-        v3 <- fromMaybe (Point3D 0.0 0.0 0.0) v3
-        v4 <- fromMaybe (Point3D 0.0 0.0 0.0) v4
-        drawFace ctx (Face v1 v2 v3 v4)
+        vd1 <- fromMaybe (Point3D 0.0 0.0 0.0) v1
+        vd2 <- fromMaybe (Point3D 0.0 0.0 0.0) v2
+        vd3 <- fromMaybe (Point3D 0.0 0.0 0.0) v3
+        vd4 <- fromMaybe (Point3D 0.0 0.0 0.0) v4
+        drawFace ctx (Face vd1 vd2 vd3 vd4)
     where
         vert2D = projectAll3Dto2D vert3D angle
 
