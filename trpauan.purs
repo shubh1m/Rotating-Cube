@@ -12,91 +12,7 @@ import DOM.HTML.Window (requestAnimationFrame)
 import Control.Monad.Eff.Ref (REF, newRef, readRef, writeRef, Ref)
 
 
--- Define 3D and 2D Point objects
-newtype Point3D = Point3D 
-  { x :: Number
-  , y :: Number
-  , z :: Number
-  }
-
-newtype Point2D = Point2D
-  { x :: Number
-  , y :: Number
-  }
-
-qx :: Number
-qx = pi / 4.0
-
-qy :: Number
-qy = pi / 3.0
-
-qz :: Number
-qz = pi / 4.0
-
-newtype Cube = Cube
-  { x :: Number
-  , y :: Number
-  , z :: Number
-  , size :: Number
-  , color :: String
-  }
-
-
-project :: Point3D -> Point2D
-project (Point3D { x, y, z }) =
-  let xRotQz = x * (cos qz) + y * (sin qz)
-      yRotQz = y * (cos qz) - x * (sin qz)
-      yRotQzQx = yRotQz * (cos qx) + z * (sin qx)
-      zRotQzQx = z * (cos qx) - yRotQz * (sin qx)
-      xRotQzQxQy = xRotQz * (cos qy) + zRotQzQx * (sin qy)
-  in
-    Point2D { x: xRotQzQxQy, y: yRotQzQx }
-
-withStroke :: forall e.
-  Context2D ->
-  String ->
-  (Context2D -> Eff (canvas :: CANVAS | e) Context2D) ->
-  Eff (canvas :: CANVAS | e) Context2D
-withStroke ctx color draw = withContext ctx do
-  ctx <- setStrokeStyle color ctx
-  ctx <- beginPath ctx
-  ctx <- draw ctx
-  ctx <- closePath ctx
-  stroke ctx
-
-
-drawLine :: forall e. Context2D -> Point2D -> Point2D -> Eff (canvas :: CANVAS | e) Context2D
-drawLine ctx (Point2D from) (Point2D to) = do
-  ctx <- moveTo ctx from.x from.y
-  lineTo ctx to.x to.y
-
-drawCube :: forall e. Context2D -> Cube -> Eff (canvas :: CANVAS | e) Context2D
-drawCube ctx (Cube { color, x, y, z, size }) = do
-  let half = size / 2.0
-  let v1 = project $ Point3D { x: x - half, y: y - half, z: z - half }
-  let v2 = project $ Point3D { x: x - half, y: y + half, z: z - half }
-  let v3 = project $ Point3D { x: x - half, y: y - half, z: z + half }
-  let v4 = project $ Point3D { x: x - half, y: y + half, z: z + half }
-  let v5 = project $ Point3D { x: x + half, y: y - half, z: z - half }
-  let v6 = project $ Point3D { x: x + half, y: y + half, z: z - half }
-  let v7 = project $ Point3D { x: x + half, y: y - half, z: z + half }
-  let v8 = project $ Point3D { x: x + half, y: y + half, z: z + half }
-  withStroke ctx color \ctx -> do
-    ctx <- drawLine ctx v1 v5
-    ctx <- drawLine ctx v5 v6
-    ctx <- drawLine ctx v6 v2
-    ctx <- drawLine ctx v2 v1
-
-    ctx <- drawLine ctx v3 v7
-    ctx <- drawLine ctx v7 v8
-    ctx <- drawLine ctx v8 v4
-    ctx <- drawLine ctx v4 v3
-
-    ctx <- drawLine ctx v1 v3
-    ctx <- drawLine ctx v5 v7
-    ctx <- drawLine ctx v6 v8
-    drawLine ctx v2 v4
-
+-- These are functions which are useful in general
 clearCanvas :: forall e. CanvasElement -> Eff (canvas :: CANVAS | e) Unit
 clearCanvas canvas = do
   width <- getCanvasWidth canvas
@@ -146,8 +62,86 @@ withAnimateContext name state draw = do
     Nothing -> pure unit
 
 
-drawBackground :: forall e. Context2D -> Eff (canvas :: CANVAS | e) Context2D
-drawBackground ctx = do
+withStroke :: forall e.
+  Context2D ->
+  String ->
+  (Context2D -> Eff (canvas :: CANVAS | e) Context2D) ->
+  Eff (canvas :: CANVAS | e) Context2D
+withStroke ctx color draw = withContext ctx do
+  ctx <- setStrokeStyle color ctx
+  ctx <- beginPath ctx
+  ctx <- draw ctx
+  ctx <- closePath ctx
+  stroke ctx
+
+
+-- Define 3D and 2D Point objects
+newtype Point3D = Point3D { x :: Number, y :: Number, z :: Number }
+
+newtype Point2D = Point2D { x :: Number, y :: Number }
+
+qx :: Number
+qx = pi / 4.0
+
+qy :: Number
+qy = pi / 3.0
+
+qz :: Number
+qz = pi / 4.0
+
+project :: Point3D -> Point2D
+project (Point3D { x, y, z }) =
+  let xRotQz = x * (cos qz) + y * (sin qz)
+      yRotQz = y * (cos qz) - x * (sin qz)
+      yRotQzQx = yRotQz * (cos qx) + z * (sin qx)
+      zRotQzQx = z * (cos qx) - yRotQz * (sin qx)
+      xRotQzQxQy = xRotQz * (cos qy) + zRotQzQx * (sin qy)
+  in
+    Point2D { x: xRotQzQxQy, y: yRotQzQx }
+
+drawLine :: forall e. Context2D -> Point2D -> Point2D -> Eff (canvas :: CANVAS | e) Context2D
+drawLine ctx (Point2D from) (Point2D to) = do
+  ctx <- moveTo ctx from.x from.y
+  lineTo ctx to.x to.y
+
+
+newtype Cube = Cube
+  { x :: Number
+  , y :: Number
+  , z :: Number
+  , size :: Number
+  , color :: String }
+
+drawCube :: forall e. Context2D -> Cube -> Eff (canvas :: CANVAS | e) Context2D
+drawCube ctx (Cube { color, x, y, z, size }) = do
+  let half = size / 2.0
+  let v1 = project $ Point3D { x: x - half, y: y - half, z: z - half }
+  let v2 = project $ Point3D { x: x - half, y: y + half, z: z - half }
+  let v3 = project $ Point3D { x: x - half, y: y - half, z: z + half }
+  let v4 = project $ Point3D { x: x - half, y: y + half, z: z + half }
+  let v5 = project $ Point3D { x: x + half, y: y - half, z: z - half }
+  let v6 = project $ Point3D { x: x + half, y: y + half, z: z - half }
+  let v7 = project $ Point3D { x: x + half, y: y - half, z: z + half }
+  let v8 = project $ Point3D { x: x + half, y: y + half, z: z + half }
+  withStroke ctx color \ctx -> do
+    ctx <- drawLine ctx v1 v5
+    ctx <- drawLine ctx v5 v6
+    ctx <- drawLine ctx v6 v2
+    ctx <- drawLine ctx v2 v1
+
+    ctx <- drawLine ctx v3 v7
+    ctx <- drawLine ctx v7 v8
+    ctx <- drawLine ctx v8 v4
+    ctx <- drawLine ctx v4 v3
+
+    ctx <- drawLine ctx v1 v3
+    ctx <- drawLine ctx v5 v7
+    ctx <- drawLine ctx v6 v8
+    drawLine ctx v2 v4
+
+
+drawScene :: forall e. Context2D -> Eff (canvas :: CANVAS | e) Context2D
+drawScene ctx = do
   ctx <- setFillStyle "rgb(122,230,232)" ctx
   fillRect ctx { x: 0.0, y: 0.0, w: 500.0, h: 400.0 }
 
@@ -159,11 +153,10 @@ main =
             , y: 600.0
             , dx: 1.0
             , dy: 1.0 }
-    angle = { qx: pi / 4.0
-            , qy: pi / 3.0
-            , qz: pi / 4.0 }
   in
     withAnimateContext "thecanvas" state \ctx state -> do
-      ctx <- drawBackground ctx
-      void $ drawCube ctx $ (Cube { x: state.x, y: state.y, z: 0.0, size: 200.0, color: "rgb(0,0,0)" })
+      ctx <- drawScene ctx
+      void $ drawCube ctx $ Cube { x: state.x, y: state.y, z: 0.0, size: 200.0, color: "rgb(0,0,0)" }
+
+      -- Update the state
       pure $ state { x = state.x + state.dx, y = state.y + state.dy }
