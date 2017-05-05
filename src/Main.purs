@@ -2,6 +2,7 @@ module Main where
 
 import Prelude
 import Data.Maybe (Maybe(..))
+import Data.Foldable (for_)
 import Control.Monad.Eff (Eff)
 import Math (pi, cos, sin)
 import Graphics.Canvas (CANVAS, Context2D, getCanvasElementById, getContext2D, setFillStyle, fillRect, moveTo, lineTo, withContext, setStrokeStyle, beginPath, closePath, stroke, CanvasElement, getCanvasWidth, getCanvasHeight, clearRect)
@@ -9,6 +10,9 @@ import DOM (DOM)
 import DOM.HTML (window)
 import DOM.HTML.Types (Window)
 import DOM.HTML.Window (requestAnimationFrame)
+import DOM.Node.ParentNode (querySelector)
+import DOM.Event.EventTarget (addEventListener)
+import DOM.Event.MouseEvent
 import Control.Monad.Eff.Ref (REF, newRef, readRef, writeRef, Ref)
 
 
@@ -38,6 +42,7 @@ newtype Cube = Cube
   , color :: String
   }
 
+newtype EventType = EventType String
 
 project :: Point3D -> Angle3D -> Point2D
 project (Point3D { x, y, z }) (Angle3D { qx, qy, qz }) =
@@ -156,8 +161,10 @@ main =
             , qx: pi / 4.0
             , qy: pi / 3.0
             , qz: pi / 4.0 }
+    canvas = getCanvasElementById "thecanvas"
   in
-    withAnimateContext "thecanvas" state \ctx state -> do
-      ctx <- drawBackground ctx
-      void $ drawCube ctx (Cube { x: state.x, y: state.y, z: 0.0, size: 200.0, color: "rgb(0,0,0)" }) (Angle3D { qx: state.qx, qy: state.qy, qz: state.qz})
-      pure $ state { x = state.x, y = state.y, qx = state.qx + 0.001, qy = state.qy + 0.001, qz = state.qz + 0.001 }
+    for_ canvas $ addEventListener (EventType "click") $ void do
+      withAnimateContext "thecanvas" state \ctx state -> do
+        ctx <- drawBackground ctx
+        void $ drawCube ctx (Cube { x: state.x, y: state.y, z: 0.0, size: 200.0, color: "rgb(0,0,0)" }) (Angle3D { qx: state.qx, qy: state.qy, qz: state.qz})
+        pure $ state { x = state.x, y = state.y, qx = state.qx + 0.005, qy = state.qy + 0.005, qz = state.qz + 0.005 }
