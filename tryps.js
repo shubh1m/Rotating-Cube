@@ -529,6 +529,9 @@ var PS = {};
   var Cube = function (x) {
       return x;
   };
+  var Angle3D = function (x) {
+      return x;
+  };
   var withStroke = function (ctx) {
       return function (color) {
           return function (draw) {
@@ -542,18 +545,17 @@ var PS = {};
           };
       };
   };
-  var qz = $$Math.pi / 4.0;
-  var qy = $$Math.pi / 3.0;
-  var qx = $$Math.pi / 4.0;
   var project = function (v) {
-      var yRotQz = v.y * $$Math.cos(qz) - v.x * $$Math.sin(qz);
-      var yRotQzQx = yRotQz * $$Math.cos(qx) + v.z * $$Math.sin(qx);
-      var zRotQzQx = v.z * $$Math.cos(qx) - yRotQz * $$Math.sin(qx);
-      var xRotQz = v.x * $$Math.cos(qz) + v.y * $$Math.sin(qz);
-      var xRotQzQxQy = xRotQz * $$Math.cos(qy) + zRotQzQx * $$Math.sin(qy);
-      return {
-          x: xRotQzQxQy, 
-          y: yRotQzQx
+      return function (v1) {
+          var yRotQz = v.y * $$Math.cos(v1.qz) - v.x * $$Math.sin(v1.qz);
+          var yRotQzQx = yRotQz * $$Math.cos(v1.qx) + v.z * $$Math.sin(v1.qx);
+          var zRotQzQx = v.z * $$Math.cos(v1.qx) - yRotQz * $$Math.sin(v1.qx);
+          var xRotQz = v.x * $$Math.cos(v1.qz) + v.y * $$Math.sin(v1.qz);
+          var xRotQzQxQy = xRotQz * $$Math.cos(v1.qy) + zRotQzQx * $$Math.sin(v1.qy);
+          return {
+              x: xRotQzQxQy, 
+              y: yRotQzQx
+          };
       };
   };
   var loopAnimation = function (window) {
@@ -591,63 +593,97 @@ var PS = {};
   };
   var drawCube = function (ctx) {
       return function (v) {
-          var half = v.size / 2.0;
-          var v1 = project({
-              x: v.x - half, 
-              y: v.y - half, 
-              z: v.z - half
-          });
-          var v2 = project({
-              x: v.x - half, 
-              y: v.y + half, 
-              z: v.z - half
-          });
-          var v3 = project({
-              x: v.x - half, 
-              y: v.y - half, 
-              z: v.z + half
-          });
-          var v4 = project({
-              x: v.x - half, 
-              y: v.y + half, 
-              z: v.z + half
-          });
-          var v5 = project({
-              x: v.x + half, 
-              y: v.y - half, 
-              z: v.z - half
-          });
-          var v6 = project({
-              x: v.x + half, 
-              y: v.y + half, 
-              z: v.z - half
-          });
-          var v7 = project({
-              x: v.x + half, 
-              y: v.y - half, 
-              z: v.z + half
-          });
-          var v8 = project({
-              x: v.x + half, 
-              y: v.y + half, 
-              z: v.z + half
-          });
-          return withStroke(ctx)(v.color)(function (ctx2) {
-              return function __do() {
-                  var v9 = drawLine(ctx2)(v1)(v5)();
-                  var v10 = drawLine(v9)(v5)(v6)();
-                  var v11 = drawLine(v10)(v6)(v2)();
-                  var v12 = drawLine(v11)(v2)(v1)();
-                  var v13 = drawLine(v12)(v3)(v7)();
-                  var v14 = drawLine(v13)(v7)(v8)();
-                  var v15 = drawLine(v14)(v8)(v4)();
-                  var v16 = drawLine(v15)(v4)(v3)();
-                  var v17 = drawLine(v16)(v1)(v3)();
-                  var v18 = drawLine(v17)(v5)(v7)();
-                  var v19 = drawLine(v18)(v6)(v8)();
-                  return drawLine(v19)(v2)(v4)();
-              };
-          });
+          return function (v1) {
+              var half = v.size / 2.0;
+              var v11 = project({
+                  x: v.x - half, 
+                  y: v.y - half, 
+                  z: v.z - half
+              })({
+                  qx: v1.qx, 
+                  qy: v1.qy, 
+                  qz: v1.qz
+              });
+              var v2 = project({
+                  x: v.x - half, 
+                  y: v.y + half, 
+                  z: v.z - half
+              })({
+                  qx: v1.qx, 
+                  qy: v1.qy, 
+                  qz: v1.qz
+              });
+              var v3 = project({
+                  x: v.x - half, 
+                  y: v.y - half, 
+                  z: v.z + half
+              })({
+                  qx: v1.qx, 
+                  qy: v1.qy, 
+                  qz: v1.qz
+              });
+              var v4 = project({
+                  x: v.x - half, 
+                  y: v.y + half, 
+                  z: v.z + half
+              })({
+                  qx: v1.qx, 
+                  qy: v1.qy, 
+                  qz: v1.qz
+              });
+              var v5 = project({
+                  x: v.x + half, 
+                  y: v.y - half, 
+                  z: v.z - half
+              })({
+                  qx: v1.qx, 
+                  qy: v1.qy, 
+                  qz: v1.qz
+              });
+              var v6 = project({
+                  x: v.x + half, 
+                  y: v.y + half, 
+                  z: v.z - half
+              })({
+                  qx: v1.qx, 
+                  qy: v1.qy, 
+                  qz: v1.qz
+              });
+              var v7 = project({
+                  x: v.x + half, 
+                  y: v.y - half, 
+                  z: v.z + half
+              })({
+                  qx: v1.qx, 
+                  qy: v1.qy, 
+                  qz: v1.qz
+              });
+              var v8 = project({
+                  x: v.x + half, 
+                  y: v.y + half, 
+                  z: v.z + half
+              })({
+                  qx: v1.qx, 
+                  qy: v1.qy, 
+                  qz: v1.qz
+              });
+              return withStroke(ctx)(v.color)(function (ctx2) {
+                  return function __do() {
+                      var v9 = drawLine(ctx2)(v11)(v5)();
+                      var v10 = drawLine(v9)(v5)(v6)();
+                      var v12 = drawLine(v10)(v6)(v2)();
+                      var v13 = drawLine(v12)(v2)(v11)();
+                      var v14 = drawLine(v13)(v3)(v7)();
+                      var v15 = drawLine(v14)(v7)(v8)();
+                      var v16 = drawLine(v15)(v8)(v4)();
+                      var v17 = drawLine(v16)(v4)(v3)();
+                      var v18 = drawLine(v17)(v11)(v3)();
+                      var v19 = drawLine(v18)(v5)(v7)();
+                      var v20 = drawLine(v19)(v6)(v8)();
+                      return drawLine(v20)(v2)(v4)();
+                  };
+              });
+          };
       };
   };
   var drawBackground = function (ctx) {
@@ -691,7 +727,7 @@ var PS = {};
                   if (v instanceof Data_Maybe.Nothing) {
                       return Data_Unit.unit;
                   };
-                  throw new Error("Failed pattern match at Main line 140, column 3 - line 146, column 25: " + [ v.constructor.name ]);
+                  throw new Error("Failed pattern match at Main line 136, column 3 - line 142, column 25: " + [ v.constructor.name ]);
               };
           };
       };
@@ -700,10 +736,6 @@ var PS = {};
       var state = {
           x: 300.0, 
           y: 600.0, 
-          dx: 1.0, 
-          dy: 1.0
-      };
-      var angle = {
           qx: $$Math.pi / 4.0, 
           qy: $$Math.pi / 3.0, 
           qz: $$Math.pi / 4.0
@@ -718,20 +750,28 @@ var PS = {};
                       z: 0.0, 
                       size: 200.0, 
                       color: "rgb(0,0,0)"
+                  })({
+                      qx: state1.qx, 
+                      qy: state1.qy, 
+                      qz: state1.qz
                   }))();
-                  var $75 = {};
-                  for (var $76 in state1) {
-                      if ({}.hasOwnProperty.call(state1, $76)) {
-                          $75[$76] = state1[$76];
+                  var $85 = {};
+                  for (var $86 in state1) {
+                      if ({}.hasOwnProperty.call(state1, $86)) {
+                          $85[$86] = state1[$86];
                       };
                   };
-                  $75.x = state1.x + state1.dx;
-                  $75.y = state1.y + state1.dy;
-                  return $75;
+                  $85.x = state1.x;
+                  $85.y = state1.y;
+                  $85.qx = state1.qx + 1.0e-3;
+                  $85.qy = state1.qy + 1.0e-3;
+                  $85.qz = state1.qz + 1.0e-3;
+                  return $85;
               };
           };
       });
   })();
+  exports["Angle3D"] = Angle3D;
   exports["Cube"] = Cube;
   exports["Point2D"] = Point2D;
   exports["Point3D"] = Point3D;
@@ -742,9 +782,6 @@ var PS = {};
   exports["loopAnimation"] = loopAnimation;
   exports["main"] = main;
   exports["project"] = project;
-  exports["qx"] = qx;
-  exports["qy"] = qy;
-  exports["qz"] = qz;
   exports["withAnimateContext"] = withAnimateContext;
   exports["withAnimation"] = withAnimation;
   exports["withStroke"] = withStroke;

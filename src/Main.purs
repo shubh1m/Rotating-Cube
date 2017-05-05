@@ -24,14 +24,11 @@ newtype Point2D = Point2D
   , y :: Number
   }
 
-qx :: Number
-qx = pi / 4.0
-
-qy :: Number
-qy = pi / 3.0
-
-qz :: Number
-qz = pi / 4.0
+newtype Angle3D = Angle3D
+  { qx :: Number
+  , qy :: Number
+  , qz :: Number
+  }
 
 newtype Cube = Cube
   { x :: Number
@@ -42,8 +39,8 @@ newtype Cube = Cube
   }
 
 
-project :: Point3D -> Point2D
-project (Point3D { x, y, z }) =
+project :: Point3D -> Angle3D -> Point2D
+project (Point3D { x, y, z }) (Angle3D { qx, qy, qz }) =
   let xRotQz = x * (cos qz) + y * (sin qz)
       yRotQz = y * (cos qz) - x * (sin qz)
       yRotQzQx = yRotQz * (cos qx) + z * (sin qx)
@@ -64,23 +61,22 @@ withStroke ctx color draw = withContext ctx do
   ctx <- closePath ctx
   stroke ctx
 
-
 drawLine :: forall e. Context2D -> Point2D -> Point2D -> Eff (canvas :: CANVAS | e) Context2D
 drawLine ctx (Point2D from) (Point2D to) = do
   ctx <- moveTo ctx from.x from.y
   lineTo ctx to.x to.y
 
-drawCube :: forall e. Context2D -> Cube -> Eff (canvas :: CANVAS | e) Context2D
-drawCube ctx (Cube { color, x, y, z, size }) = do
+drawCube :: forall e. Context2D -> Cube -> Angle3D -> Eff (canvas :: CANVAS | e) Context2D
+drawCube ctx (Cube { color, x, y, z, size }) (Angle3D { qx, qy, qz })= do
   let half = size / 2.0
-  let v1 = project $ Point3D { x: x - half, y: y - half, z: z - half }
-  let v2 = project $ Point3D { x: x - half, y: y + half, z: z - half }
-  let v3 = project $ Point3D { x: x - half, y: y - half, z: z + half }
-  let v4 = project $ Point3D { x: x - half, y: y + half, z: z + half }
-  let v5 = project $ Point3D { x: x + half, y: y - half, z: z - half }
-  let v6 = project $ Point3D { x: x + half, y: y + half, z: z - half }
-  let v7 = project $ Point3D { x: x + half, y: y - half, z: z + half }
-  let v8 = project $ Point3D { x: x + half, y: y + half, z: z + half }
+  let v1 = project (Point3D { x: x - half, y: y - half, z: z - half }) (Angle3D {qx: qx, qy: qy, qz: qz})
+  let v2 = project (Point3D { x: x - half, y: y + half, z: z - half }) (Angle3D {qx: qx, qy: qy, qz: qz})
+  let v3 = project (Point3D { x: x - half, y: y - half, z: z + half }) (Angle3D {qx: qx, qy: qy, qz: qz})
+  let v4 = project (Point3D { x: x - half, y: y + half, z: z + half }) (Angle3D {qx: qx, qy: qy, qz: qz})
+  let v5 = project (Point3D { x: x + half, y: y - half, z: z - half }) (Angle3D {qx: qx, qy: qy, qz: qz})
+  let v6 = project (Point3D { x: x + half, y: y + half, z: z - half }) (Angle3D {qx: qx, qy: qy, qz: qz})
+  let v7 = project (Point3D { x: x + half, y: y - half, z: z + half }) (Angle3D {qx: qx, qy: qy, qz: qz})
+  let v8 = project (Point3D { x: x + half, y: y + half, z: z + half }) (Angle3D {qx: qx, qy: qy, qz: qz})
   withStroke ctx color \ctx -> do
     ctx <- drawLine ctx v1 v5
     ctx <- drawLine ctx v5 v6
@@ -157,13 +153,11 @@ main =
   let
     state = { x: 300.0
             , y: 600.0
-            , dx: 1.0
-            , dy: 1.0 }
-    angle = { qx: pi / 4.0
+            , qx: pi / 4.0
             , qy: pi / 3.0
             , qz: pi / 4.0 }
   in
     withAnimateContext "thecanvas" state \ctx state -> do
       ctx <- drawBackground ctx
-      void $ drawCube ctx $ (Cube { x: state.x, y: state.y, z: 0.0, size: 200.0, color: "rgb(0,0,0)" })
-      pure $ state { x = state.x + state.dx, y = state.y + state.dy }
+      void $ drawCube ctx (Cube { x: state.x, y: state.y, z: 0.0, size: 200.0, color: "rgb(0,0,0)" }) (Angle3D { qx: state.qx, qy: state.qy, qz: state.qz})
+      pure $ state { x = state.x, y = state.y, qx = state.qx + 0.001, qy = state.qy + 0.001, qz = state.qz + 0.001 }
