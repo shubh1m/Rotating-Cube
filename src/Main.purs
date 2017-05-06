@@ -2,7 +2,7 @@ module Main where
 
 import Prelude
 import Data.Maybe (Maybe(..))
-import Data.Foldable (for_)
+--import Data.Foldable (for_)
 import Control.Monad.Eff (Eff)
 import Math (pi, cos, sin)
 import Graphics.Canvas (CANVAS, Context2D, getCanvasElementById, getContext2D, setFillStyle, fillRect, moveTo, lineTo, withContext, setStrokeStyle, beginPath, closePath, stroke, CanvasElement, getCanvasWidth, getCanvasHeight, clearRect)
@@ -10,14 +10,15 @@ import DOM (DOM)
 import DOM.HTML (window)
 import DOM.HTML.Types (Window)
 import DOM.HTML.Window (requestAnimationFrame)
-import DOM.Node.ParentNode (querySelector)
-import DOM.Event.EventTarget (addEventListener)
-import DOM.Event.MouseEvent
+--import DOM.Node.ParentNode (querySelector)
+--import DOM.Event.EventTarget (addEventListener)
+--import DOM.Event.Types (EventType, MouseEvent)
+--import DOM.HTML.Event.EventTypes (click, mouseup, mousedown)
 import Control.Monad.Eff.Ref (REF, newRef, readRef, writeRef, Ref)
 
 
 -- Define 3D and 2D Point objects
-newtype Point3D = Point3D 
+newtype Point3D = Point3D
   { x :: Number
   , y :: Number
   , z :: Number
@@ -34,6 +35,7 @@ newtype Angle3D = Angle3D
   , qz :: Number
   }
 
+-- Define cube object
 newtype Cube = Cube
   { x :: Number
   , y :: Number
@@ -42,7 +44,8 @@ newtype Cube = Cube
   , color :: String
   }
 
-newtype EventType = EventType String
+
+--| Function to project 3D point on 2D coordinate plane
 
 project :: Point3D -> Angle3D -> Point2D
 project (Point3D { x, y, z }) (Angle3D { qx, qy, qz }) =
@@ -53,6 +56,7 @@ project (Point3D { x, y, z }) (Angle3D { qx, qy, qz }) =
       xRotQzQxQy = xRotQz * (cos qy) + zRotQzQx * (sin qy)
   in
     Point2D { x: xRotQzQxQy, y: yRotQzQx }
+
 
 withStroke :: forall e.
   Context2D ->
@@ -66,10 +70,12 @@ withStroke ctx color draw = withContext ctx do
   ctx <- closePath ctx
   stroke ctx
 
+
 drawLine :: forall e. Context2D -> Point2D -> Point2D -> Eff (canvas :: CANVAS | e) Context2D
 drawLine ctx (Point2D from) (Point2D to) = do
   ctx <- moveTo ctx from.x from.y
   lineTo ctx to.x to.y
+
 
 drawCube :: forall e. Context2D -> Cube -> Angle3D -> Eff (canvas :: CANVAS | e) Context2D
 drawCube ctx (Cube { color, x, y, z, size }) (Angle3D { qx, qy, qz })= do
@@ -98,6 +104,7 @@ drawCube ctx (Cube { color, x, y, z, size }) (Angle3D { qx, qy, qz })= do
     ctx <- drawLine ctx v6 v8
     drawLine ctx v2 v4
 
+
 clearCanvas :: forall e. CanvasElement -> Eff (canvas :: CANVAS | e) Unit
 clearCanvas canvas = do
   width <- getCanvasWidth canvas
@@ -120,6 +127,7 @@ loopAnimation window ref state step =
        writeRef ref state
     window
 
+
 withAnimation :: forall e state.
   state ->
   (state -> Eff (ref :: REF, dom :: DOM | e) state) ->
@@ -137,7 +145,6 @@ withAnimateContext :: forall e state.
   Eff (dom :: DOM, ref :: REF, canvas :: CANVAS | e) Unit
 withAnimateContext name state draw = do
   canvas <- getCanvasElementById name
-
   case canvas of
     Just canvas -> do
       ctx <- getContext2D canvas
@@ -160,11 +167,12 @@ main =
             , y: 600.0
             , qx: pi / 4.0
             , qy: pi / 3.0
-            , qz: pi / 4.0 }
+            , qz: pi / 4.0
+            , acc: 0.998
+            , drag: false }
     canvas = getCanvasElementById "thecanvas"
   in
-    for_ canvas $ addEventListener (EventType "click") $ void do
-      withAnimateContext "thecanvas" state \ctx state -> do
+    withAnimateContext "thecanvas" state \ctx state -> do
         ctx <- drawBackground ctx
         void $ drawCube ctx (Cube { x: state.x, y: state.y, z: 0.0, size: 200.0, color: "rgb(0,0,0)" }) (Angle3D { qx: state.qx, qy: state.qy, qz: state.qz})
         pure $ state { x = state.x, y = state.y, qx = state.qx + 0.005, qy = state.qy + 0.005, qz = state.qz + 0.005 }
